@@ -2,222 +2,311 @@ const Task = require("../models/Task");
 
 
 // Create Task
+
 exports.createTask = async (req, res) => {
 
-  try {
+try{
 
-    const {
-      title,
-      description,
-      project,
-      assignedTo,
-      dueDate
-    } = req.body;
-
-
-    // Validation
-
-    if (!title) {
-
-      return res.status(400).json({
-        message: "Task title is required"
-      });
-
-    }
-
-    if (!project) {
-
-      return res.status(400).json({
-        message: "Project is required"
-      });
-
-    }
-
-    if (!assignedTo) {
-
-      return res.status(400).json({
-        message: "Please assign a member"
-      });
-
-    }
+const{
+title,
+description,
+project,
+assignedTo,
+dueDate
+}=req.body;
 
 
-    const task = await Task.create({
+// Validation
 
-      title,
-      description,
-      project,
-      assignedTo,
-      dueDate,
-      createdBy: req.user.id
+if(!title){
 
-    });
+return res.status(400).json({
 
-    res.status(201).json(task);
+message:"Task title is required"
 
-  } catch (error) {
+});
 
-    res.status(500).json({
+}
 
-      message: error.message
+if(!project){
 
-    });
+return res.status(400).json({
 
-  }
+message:"Project is required"
+
+});
+
+}
+
+if(!assignedTo){
+
+return res.status(400).json({
+
+message:"Please assign a member"
+
+});
+
+}
+
+
+// Create task
+
+const task=
+
+await Task.create({
+
+title,
+description,
+project,
+assignedTo,
+dueDate,
+createdBy:req.user.id
+
+});
+
+
+// Populate task
+
+const populatedTask=
+
+await Task.findById(
+
+task._id
+
+)
+
+.populate(
+"project",
+"title"
+)
+
+.populate(
+"assignedTo",
+"name email"
+)
+
+.populate(
+"createdBy",
+"name"
+);
+
+
+res.status(201).json(
+
+populatedTask
+
+);
+
+}
+
+catch(error){
+
+console.log(error);
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
+
+};
+
+
+
+// Get Tasks
+
+exports.getTasks=async(req,res)=>{
+
+try{
+
+let tasks;
+
+if(req.user.role==="Admin"){
+
+// Admin sees all tasks
+
+tasks=
+
+await Task.find()
+
+.populate(
+"project",
+"title"
+)
+
+.populate(
+"assignedTo",
+"name email"
+)
+
+.populate(
+"createdBy",
+"name"
+);
+
+}
+else{
+
+// Member sees only assigned tasks
+
+tasks=
+
+await Task.find({
+
+assignedTo:req.user.id.toString()
+
+})
+
+.populate(
+"project",
+"title"
+)
+
+.populate(
+"assignedTo",
+"name email"
+)
+
+.populate(
+"createdBy",
+"name"
+);
+
+}
+
+
+// Debug log
+
+console.log({
+
+userId:req.user.id,
+role:req.user.role,
+taskCount:tasks.length
+
+});
+
+
+res.json(tasks);
+
+}
+
+catch(error){
+
+console.log(error);
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
 
 };
 
 
-exports.getTasks = async (req, res) => {
-
-  try {
-
-    let tasks;
-
-    // Admin sees all tasks
-
-    if(req.user.role==="Admin"){
-
-      tasks = await Task.find()
-
-      .populate(
-        "project",
-        "title"
-      )
-
-      .populate(
-        "assignedTo",
-        "name email"
-      )
-
-      .populate(
-        "createdBy",
-        "name"
-      );
-
-    }
-
-    // Member sees only assigned tasks
-
-    else{
-
-      tasks = await Task.find({
-
-        assignedTo:req.user.id
-
-      })
-
-      .populate(
-        "project",
-        "title"
-      )
-
-      .populate(
-        "assignedTo",
-        "name email"
-      )
-
-      .populate(
-        "createdBy",
-        "name"
-      );
-
-    }
-
-    res.json(tasks);
-
-  }
-  catch(error){
-
-    res.status(500).json({
-
-      message:error.message
-
-    });
-
-  }
-
-};
 
 // Update Task Status
-exports.updateTaskStatus = async (req, res) => {
 
-  try {
+exports.updateTaskStatus=async(req,res)=>{
 
-    const task = await Task.findById(
-      req.params.id
-    );
+try{
 
-    if (!task) {
+const task=
 
-      return res.status(404).json({
+await Task.findById(
 
-        message: "Task not found"
+req.params.id
 
-      });
+);
 
-    }
+if(!task){
 
-    task.status =
-      req.body.status;
+return res.status(404).json({
 
-    await task.save();
+message:"Task not found"
 
-    res.json({
+});
 
-      message: "Task updated",
+}
 
-      task
 
-    });
+task.status=
 
-  } catch (error) {
+req.body.status;
 
-    res.status(500).json({
+await task.save();
 
-      message: error.message
+res.json({
 
-    });
+message:"Task updated",
 
-  }
+task
+
+});
+
+}
+
+catch(error){
+
+console.log(error);
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
 
 };
+
 
 
 // Delete Task
-exports.deleteTask = async (req, res) => {
 
-  try {
+exports.deleteTask=async(req,res)=>{
 
-    const task =
-    await Task.findByIdAndDelete(
-      req.params.id
-    );
+try{
 
-    if (!task) {
+const task=
 
-      return res.status(404).json({
+await Task.findByIdAndDelete(
 
-        message: "Task not found"
+req.params.id
 
-      });
+);
 
-    }
+if(!task){
 
-    res.json({
+return res.status(404).json({
 
-      message: "Task deleted"
+message:"Task not found"
 
-    });
+});
 
-  } catch (error) {
+}
 
-    res.status(500).json({
+res.json({
 
-      message: error.message
+message:"Task deleted"
 
-    });
+});
 
-  }
+}
+
+catch(error){
+
+console.log(error);
+
+res.status(500).json({
+
+message:error.message
+
+});
+
+}
 
 };
