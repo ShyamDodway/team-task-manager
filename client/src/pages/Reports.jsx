@@ -2,54 +2,109 @@ import {
 PieChart,
 Pie,
 Cell,
+
 BarChart,
 Bar,
+
 XAxis,
 YAxis,
+
 Tooltip
+
 } from "recharts";
+
+import {
+useEffect,
+useState
+}
+from "react";
+
+import API from "../services/api";
 
 import Sidebar from "../components/Sidebar";
 
+
 const Reports=()=>{
+
+const [stats,setStats]=useState({});
+
+
+useEffect(()=>{
+
+fetchReports();
+
+},[]);
+
+
+
+const fetchReports=async()=>{
+
+try{
+
+const res=
+
+await API.get(
+"/dashboard/stats"
+);
+
+setStats(
+res.data
+);
+
+}
+catch(error){
+
+console.log(
+error
+);
+
+}
+
+};
+
+
 
 const taskData=[
 
 {
-name:"Pending",
-value:5
+
+name:"Total Tasks",
+
+value:
+
+stats.totalTasks || 0
+
 },
 
 {
-name:"In Progress",
-value:3
+
+name:"Pending Tasks",
+
+value:
+
+stats.pendingTasks || 0
+
 },
 
 {
-name:"Completed",
-value:12
+
+name:"Completed Tasks",
+
+value:
+
+stats.completedTasks || 0
+
 }
 
 ];
 
-const projectData=[
 
-{
-name:"Project A",
-progress:70
-},
 
-{
-name:"Project B",
-progress:50
-},
+const projectData=
 
-{
-name:"Project C",
-progress:90
-}
+stats.projectTasks || [];
 
-];
+
 
 const colors=[
 
@@ -58,6 +113,7 @@ const colors=[
 "#00C49F"
 
 ];
+
 
 return(
 
@@ -73,36 +129,61 @@ Reports
 
 </h1>
 
+
 <div className="grid grid-cols-2 gap-8">
+
+
+{/* Pie Chart */}
 
 <div className="bg-white p-6 rounded shadow">
 
 <h2 className="font-bold mb-4">
 
-Task Status
+Task Status Overview
 
 </h2>
 
+
 <PieChart
-width={300}
+width={350}
 height={300}
 >
 
 <Pie
+
 data={taskData}
+
 dataKey="value"
+
 outerRadius={100}
+
 label
+
 >
 
-{taskData.map((entry,index)=>(
+{
+
+taskData.map(
+
+(entry,index)=>(
 
 <Cell
+
 key={index}
-fill={colors[index]}
+
+fill={
+
+colors[index]
+
+}
+
 />
 
-))}
+)
+
+)
+
+}
 
 </Pie>
 
@@ -113,31 +194,52 @@ fill={colors[index]}
 </div>
 
 
+
+{/* Bar Chart */}
+
 <div className="bg-white p-6 rounded shadow">
 
 <h2 className="font-bold mb-4">
 
-Project Progress
+Tasks Assigned Per Project
 
 </h2>
 
-<BarChart
-width={400}
-height={300}
-data={projectData}
->
 
-<XAxis dataKey="name"/>
+
+<BarChart
+width={450}
+height={300}
+data={projectData.length ? projectData : [
+{
+projectName:"No Data",
+count:0
+}
+]}
+>
+<XAxis
+
+dataKey="projectName"
+
+/>
 
 <YAxis/>
 
 <Tooltip/>
 
-<Bar dataKey="progress"/>
+
+<Bar
+
+dataKey="count"
+
+fill="#0088FE"
+
+/>
 
 </BarChart>
 
 </div>
+
 
 </div>
 
@@ -149,4 +251,4 @@ data={projectData}
 
 }
 
-export default Reports
+export default Reports;

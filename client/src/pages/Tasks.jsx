@@ -4,8 +4,11 @@ import Sidebar from "../components/Sidebar";
 
 const Tasks = () => {
 
-  const [tasks, setTasks] = useState([]);
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
+  const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
   const [projects, setProjects] = useState([]);
 
@@ -19,8 +22,13 @@ const Tasks = () => {
   useEffect(() => {
 
     fetchTasks();
-    fetchMembers();
-    fetchProjects();
+
+    if(user?.role==="Admin"){
+
+      fetchMembers();
+      fetchProjects();
+
+    }
 
   }, []);
 
@@ -29,13 +37,15 @@ const Tasks = () => {
 
   const fetchTasks = async () => {
 
-    try {
+    try{
 
-      const res = await API.get("/tasks");
+      const res =
+      await API.get("/tasks");
 
       setTasks(res.data);
 
-    } catch (error) {
+    }
+    catch(error){
 
       console.log(error);
 
@@ -46,15 +56,29 @@ const Tasks = () => {
 
   // Fetch Members
 
-  const fetchMembers = async () => {
+  const fetchMembers = async()=>{
 
-    try {
+    try{
 
-      const res = await API.get("/users");
+      const res=
+      await API.get("/users");
 
-      setMembers(res.data);
+      const onlyMembers=
 
-    } catch (error) {
+      res.data.filter(
+
+      member=>
+
+      member.role==="Member"
+
+      );
+
+      setMembers(
+      onlyMembers
+      );
+
+    }
+    catch(error){
 
       console.log(error);
 
@@ -65,15 +89,19 @@ const Tasks = () => {
 
   // Fetch Projects
 
-  const fetchProjects = async () => {
+  const fetchProjects = async()=>{
 
-    try {
+    try{
 
-      const res = await API.get("/projects");
+      const res=
+      await API.get("/projects");
 
-      setProjects(res.data);
+      setProjects(
+      res.data
+      );
 
-    } catch (error) {
+    }
+    catch(error){
 
       console.log(error);
 
@@ -84,19 +112,25 @@ const Tasks = () => {
 
   // Create Task
 
-  const createTask = async () => {
+  const createTask=async()=>{
 
-    try {
+    try{
 
-      await API.post("/tasks", {
+      await API.post(
 
-        title,
-        description,
-        dueDate,
-        assignedTo,
-        project
+      "/tasks",
 
-      });
+      {
+
+      title,
+      description,
+      dueDate,
+      assignedTo,
+      project
+
+      }
+
+      );
 
       setTitle("");
       setDescription("");
@@ -106,13 +140,17 @@ const Tasks = () => {
 
       fetchTasks();
 
-    } catch (error) {
+    }
+    catch(error){
 
       console.log(error);
 
       alert(
-        error.response?.data?.message ||
-        "Task creation failed"
+
+      error.response?.data?.message ||
+
+      "Task creation failed"
+
       );
 
     }
@@ -120,22 +158,31 @@ const Tasks = () => {
   };
 
 
-  // Update Status
+  // Update Task Status
 
-  const updateStatus = async (id, status) => {
+  const updateStatus=async(
 
-    try {
+    id,
+    status
+
+  )=>{
+
+    try{
 
       await API.put(
 
-        `/tasks/${id}/status`,
-        { status }
+      `/tasks/${id}/status`,
+
+      {
+      status
+      }
 
       );
 
       fetchTasks();
 
-    } catch (error) {
+    }
+    catch(error){
 
       console.log(error);
 
@@ -148,7 +195,7 @@ const Tasks = () => {
 
     <div className="flex bg-gray-100 min-h-screen">
 
-      <Sidebar />
+      <Sidebar/>
 
       <div className="ml-64 p-8 w-full">
 
@@ -158,6 +205,8 @@ const Tasks = () => {
 
         </h1>
 
+
+        {user?.role==="Admin" && (
 
         <div className="bg-white p-6 rounded-xl shadow mb-8">
 
@@ -169,106 +218,109 @@ const Tasks = () => {
 
 
           <input
-            type="text"
-            placeholder="Task title"
-            value={title}
-            onChange={(e)=>
-              setTitle(e.target.value)
-            }
-            className="w-full border p-3 rounded mb-4"
+          type="text"
+          placeholder="Task title"
+          value={title}
+          onChange={(e)=>
+          setTitle(
+          e.target.value
+          )}
+          className="w-full border p-3 rounded mb-4"
           />
 
 
           <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e)=>
-              setDescription(e.target.value)
-            }
-            className="w-full border p-3 rounded mb-4"
+          placeholder="Description"
+          value={description}
+          onChange={(e)=>
+          setDescription(
+          e.target.value
+          )}
+          className="w-full border p-3 rounded mb-4"
           />
 
 
           <select
-            value={project}
-            onChange={(e)=>
-              setProject(e.target.value)
-            }
-            className="w-full border p-3 rounded mb-4"
+          value={project}
+          onChange={(e)=>
+          setProject(
+          e.target.value
+          )}
+          className="w-full border p-3 rounded mb-4"
           >
 
-            <option value="">
-              Select Project
-            </option>
+          <option value="">
+          Select Project
+          </option>
 
-            {projects.map((project)=>(
+          {projects.map((project)=>(
 
-              <option
-                key={project._id}
-                value={project._id}
-              >
+          <option
+          key={project._id}
+          value={project._id}
+          >
 
-                {project.title}
+          {project.title}
 
-              </option>
+          </option>
 
-            ))}
+          ))}
 
           </select>
 
 
           <select
-            value={assignedTo}
-            onChange={(e)=>
-              setAssignedTo(
-                e.target.value
-              )
-            }
-            className="w-full border p-3 rounded mb-4"
+          value={assignedTo}
+          onChange={(e)=>
+          setAssignedTo(
+          e.target.value
+          )}
+          className="w-full border p-3 rounded mb-4"
           >
 
-            <option value="">
-              Assign Member
-            </option>
+          <option value="">
+          Assign Member
+          </option>
 
-            {members.map((member)=>(
+          {members.map((member)=>(
 
-              <option
-                key={member._id}
-                value={member._id}
-              >
+          <option
+          key={member._id}
+          value={member._id}
+          >
 
-                {member.name}
+          {member.name}
 
-              </option>
+          </option>
 
-            ))}
+          ))}
 
           </select>
 
 
           <input
-            type="date"
-            value={dueDate}
-            onChange={(e)=>
-              setDueDate(
-                e.target.value
-              )
-            }
-            className="w-full border p-3 rounded mb-4"
+          type="date"
+          value={dueDate}
+          onChange={(e)=>
+          setDueDate(
+          e.target.value
+          )}
+          className="w-full border p-3 rounded mb-4"
           />
 
 
           <button
-            onClick={createTask}
-            className="bg-blue-600 text-white px-5 py-3 rounded"
+          onClick={createTask}
+          className="bg-blue-600 text-white px-5 py-3 rounded"
           >
 
-            Create Task
+          Create Task
 
           </button>
 
         </div>
+
+        )}
 
 
         <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
@@ -309,67 +361,111 @@ const Tasks = () => {
 
             <tbody>
 
-              {tasks.map((task)=>(
+            {tasks.length===0?
 
-                <tr
-                  key={task._id}
-                  className="border-b"
-                >
+            (
 
-                  <td className="p-3">
-                    {task.title}
-                  </td>
+            <tr>
 
-                  <td className="p-3">
-                    {task.project?.title}
-                  </td>
+            <td
+            colSpan="6"
+            className="text-center p-6"
+            >
 
-                  <td className="p-3">
-                    {task.assignedTo?.name}
-                  </td>
+            No assigned tasks
 
-                  <td className="p-3">
-                    {task.status}
-                  </td>
+            </td>
 
-                  <td className="p-3">
-                    {task.dueDate?.substring(0,10)}
-                  </td>
+            </tr>
 
-                  <td className="p-3">
+            )
 
-                    <select
-                      value={task.status}
-                      onChange={(e)=>
+            :
 
-                        updateStatus(
-                          task._id,
-                          e.target.value
-                        )
+            (
 
-                      }
-                      className="border p-2 rounded"
-                    >
+            tasks.map((task)=>(
 
-                      <option>
-                        Pending
-                      </option>
+            <tr
+            key={task._id}
+            className="border-b"
+            >
 
-                      <option>
-                        In Progress
-                      </option>
+            <td className="p-3">
 
-                      <option>
-                        Completed
-                      </option>
+            {task.title}
 
-                    </select>
+            </td>
 
-                  </td>
+            <td className="p-3">
 
-                </tr>
+            {task.project?.title}
 
-              ))}
+            </td>
+
+            <td className="p-3">
+
+            {task.assignedTo?.name}
+
+            </td>
+
+            <td className="p-3">
+
+            {task.status}
+
+            </td>
+
+            <td className="p-3">
+
+            {task.dueDate?.substring(
+            0,
+            10
+            )}
+
+            </td>
+
+            <td className="p-3">
+
+            <select
+            value={task.status}
+            onChange={(e)=>
+
+            updateStatus(
+            task._id,
+            e.target.value
+            )
+
+            }
+            className="border p-2 rounded"
+            >
+
+            <option>
+
+            Pending
+
+            </option>
+
+            <option>
+
+            In Progress
+
+            </option>
+
+            <option>
+
+            Completed
+
+            </option>
+
+            </select>
+
+            </td>
+
+            </tr>
+
+            ))
+
+            )}
 
             </tbody>
 

@@ -1,140 +1,242 @@
 import { useState, useContext } from "react";
 import API from "../services/api";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
 
-  const [selectedRole, setSelectedRole] = useState("Admin");
+  const [selectedRole, setSelectedRole] =
+  useState("Admin");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email,setEmail] =
+  useState("");
 
-  const { login } = useContext(AuthContext);
+  const [password,setPassword] =
+  useState("");
 
-  const navigate = useNavigate();
+  const { login } =
+  useContext(
+    AuthContext
+  );
 
-  const handleSubmit = async (e) => {
+  const navigate =
+  useNavigate();
+
+
+  const handleSubmit = async(e)=>{
 
     e.preventDefault();
 
-    try {
+    try{
 
-      const res = await API.post("/auth/login", {
+      const res=
+      await API.post(
+
+      "/auth/login",
+
+      {
         email,
         password
-      });
-
-      if (res.data.user.role !== selectedRole) {
-
-        return alert(
-          `This account is not a ${selectedRole}`
-        );
-
       }
 
-      login(
-        res.data.user,
-        res.data.token
       );
 
-      if (selectedRole === "Admin") {
+      if(
 
-        navigate("/dashboard/admin");
+      res.data.user.role
+      !==
+      selectedRole
 
-      } else {
+      ){
 
-        navigate("/dashboard/member");
+      return alert(
+
+      `This account is not a ${selectedRole}`
+
+      );
 
       }
 
-    } catch (error) {
+
+      login(
+
+      res.data.user,
+
+      res.data.token
+
+      );
+
+
+      if(
+
+      selectedRole==="Admin"
+
+      ){
+
+      navigate(
+      "/dashboard/admin"
+      );
+
+      }
+
+      else{
+
+      navigate(
+      "/dashboard/member"
+      );
+
+      }
+
+    }
+
+    catch(error){
 
       alert(
-        error.response?.data?.message ||
-        "Login Failed"
+
+      error.response?.data?.message ||
+
+      "Login Failed"
+
       );
 
     }
 
   };
 
-  return (
 
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+  return(
 
-      <div className="bg-white p-8 rounded-xl shadow-lg w-96">
+<div className="flex justify-center items-center min-h-screen bg-gray-100">
 
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Team Task Manager
-        </h1>
+<div className="bg-white p-8 rounded-xl shadow-lg w-96">
 
-        <div className="flex mb-6">
+<h1 className="text-3xl font-bold text-center mb-2">
 
-          <button
-            className={`w-1/2 p-3 ${
-              selectedRole==="Admin"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-            }`}
-            onClick={() =>
-              setSelectedRole("Admin")
-            }
-          >
-            Admin
-          </button>
+Team Task Manager
 
-          <button
-            className={`w-1/2 p-3 ${
-              selectedRole==="Member"
-              ? "bg-green-600 text-white"
-              : "bg-gray-200"
-            }`}
-            onClick={() =>
-              setSelectedRole("Member")
-            }
-          >
-            Member
-          </button>
+</h1>
 
-        </div>
+<p className="text-gray-500 text-center mb-6">
 
-        <form onSubmit={handleSubmit}>
+Login to continue
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border p-3 rounded mb-4"
-            value={email}
-            onChange={(e)=>
-              setEmail(e.target.value)
-            }
-          />
+</p>
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full border p-3 rounded mb-4"
-            value={password}
-            onChange={(e)=>
-              setPassword(e.target.value)
-            }
-          />
 
-          <button
-            className="w-full bg-blue-600 text-white p-3 rounded"
-          >
-            Login
-          </button>
+<div className="flex mb-6 rounded overflow-hidden">
 
-        </form>
+<button
+type="button"
+className={`w-1/2 p-3 font-semibold ${
+selectedRole==="Admin"
 
-      </div>
+? "bg-blue-600 text-white"
 
-    </div>
+: "bg-gray-200"
 
-  );
+}`}
+onClick={()=>setSelectedRole(
+"Admin"
+)}
+>
+
+Admin
+
+</button>
+
+
+<button
+type="button"
+className={`w-1/2 p-3 font-semibold ${
+selectedRole==="Member"
+
+? "bg-green-600 text-white"
+
+: "bg-gray-200"
+
+}`}
+onClick={()=>setSelectedRole(
+"Member"
+)}
+>
+
+Member
+
+</button>
+
+</div>
+
+
+<form
+onSubmit={
+handleSubmit
+}
+>
+
+<input
+type="email"
+placeholder="Email"
+className="w-full border p-3 rounded mb-4"
+value={email}
+onChange={(e)=>
+setEmail(
+e.target.value
+)
+}
+required
+/>
+
+
+<input
+type="password"
+placeholder="Password"
+className="w-full border p-3 rounded mb-4"
+value={password}
+onChange={(e)=>
+setPassword(
+e.target.value
+)
+}
+required
+/>
+
+
+<button
+className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
+>
+
+Login
+
+</button>
+
+</form>
+
+
+<div className="text-center mt-5">
+
+<p>
+
+Don't have an account?
+
+<Link
+to="/register"
+className="text-blue-600 font-semibold ml-2"
+>
+
+Sign Up
+
+</Link>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+);
 
 };
 
-export default Login;
+export default Login; 
