@@ -1,14 +1,21 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-
   try {
+    const authHeader = req.headers.authorization;
 
-    const token = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({
+        message: "No token provided"
+      });
+    }
+
+    // Extract token from "Bearer <token>"
+    const token = authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
-        message: "No token provided"
+        message: "Invalid token format"
       });
     }
 
@@ -22,10 +29,10 @@ module.exports = (req, res, next) => {
     next();
 
   } catch (error) {
+    console.log(error);
 
     res.status(401).json({
       message: "Invalid token"
     });
-
   }
 };
