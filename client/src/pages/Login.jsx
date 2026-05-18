@@ -88,16 +88,17 @@ const Login = () => {
 
     catch (error) {
 
-      alert(
+  console.log(error);
+  console.log(error.response);
+  console.log(error.response?.data);
 
-        error.response?.data?.message ||
+  alert(
+    error.response?.data?.message ||
+    JSON.stringify(error.response?.data) ||
+    "Login Failed"
+  );
 
-        "Login Failed"
-
-      );
-
-    }
-
+}
   };
 
   return (
