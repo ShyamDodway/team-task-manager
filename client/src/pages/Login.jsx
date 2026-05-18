@@ -15,7 +15,9 @@ const Login = () => {
     useState("");
 
   const { login } =
-    useContext(AuthContext);
+    useContext(
+      AuthContext
+    );
 
   const navigate =
     useNavigate();
