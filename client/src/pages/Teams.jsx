@@ -18,7 +18,7 @@ const fetchMembers=async()=>{
 
 try{
 
-const res=await API.get("/users");
+const res=await API.get("/api/users");
 
 setMembers(res.data);
 

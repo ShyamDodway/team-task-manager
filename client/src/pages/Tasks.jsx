@@ -40,7 +40,7 @@ const Tasks = () => {
     try{
 
       const res =
-      await API.get("/tasks");
+      await API.get("/api/tasks");
 
       setTasks(res.data);
 
@@ -61,7 +61,7 @@ const Tasks = () => {
     try{
 
       const res=
-      await API.get("/users");
+      await API.get("/api/users");
 
       const onlyMembers=
 
@@ -94,7 +94,7 @@ const Tasks = () => {
     try{
 
       const res=
-      await API.get("/projects");
+      await API.get("/api/projects");
 
       setProjects(
       res.data
@@ -118,7 +118,7 @@ const Tasks = () => {
 
       await API.post(
 
-      "/tasks",
+      "/api/tasks",
 
       {
 
@@ -171,7 +171,7 @@ const Tasks = () => {
 
       await API.put(
 
-      `/tasks/${id}/status`,
+      `/api/tasks/${id}/status`,
 
       {
       status

@@ -26,7 +26,7 @@ try{
 
 const res=
 await API.get(
-"/dashboard/stats"
+"/api/dashboard/stats"
 );
 
 setStats(

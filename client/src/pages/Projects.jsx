@@ -47,7 +47,7 @@ try{
 
 const res=
 await API.get(
-"/projects"
+"/api/projects"
 );
 
 setProjects(
@@ -74,7 +74,7 @@ try{
 
 const res=
 await API.get(
-"/users"
+"/api/users"
 );
 
 const onlyMembers=
@@ -124,7 +124,7 @@ return alert(
 
 const res=await API.post(
 
-"/projects",
+"/api/projects",
 
 {
 
