@@ -6,7 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 const Login = () => {
 
   const [selectedRole, setSelectedRole] =
-    useState("Admin");
+    useState("admin");
 
   const [email, setEmail] =
     useState("");
@@ -40,11 +40,13 @@ const Login = () => {
 
         );
 
+      console.log(res.data);
+
       if (
 
-        res.data.user.role
+        res.data.user.role.toLowerCase()
         !==
-        selectedRole
+        selectedRole.toLowerCase()
 
       ) {
 
@@ -66,7 +68,7 @@ const Login = () => {
 
       if (
 
-        selectedRole === "Admin"
+        selectedRole === "admin"
 
       ) {
 
@@ -88,17 +90,18 @@ const Login = () => {
 
     catch (error) {
 
-  console.log(error);
-  console.log(error.response);
-  console.log(error.response?.data);
+      console.log(error);
+      console.log(error.response);
+      console.log(error.response?.data);
 
-  alert(
-    error.response?.data?.message ||
-    JSON.stringify(error.response?.data) ||
-    "Login Failed"
-  );
+      alert(
+        error.response?.data?.message ||
+        JSON.stringify(error.response?.data) ||
+        "Login Failed"
+      );
 
-}
+    }
+
   };
 
   return (
@@ -124,7 +127,7 @@ const Login = () => {
           <button
             type="button"
             className={`w-1/2 p-3 font-semibold ${
-              selectedRole === "Admin"
+              selectedRole === "admin"
 
                 ? "bg-blue-600 text-white"
 
@@ -132,7 +135,7 @@ const Login = () => {
 
               }`}
             onClick={() => setSelectedRole(
-              "Admin"
+              "admin"
             )}
           >
 
@@ -143,7 +146,7 @@ const Login = () => {
           <button
             type="button"
             className={`w-1/2 p-3 font-semibold ${
-              selectedRole === "Member"
+              selectedRole === "member"
 
                 ? "bg-green-600 text-white"
 
@@ -151,7 +154,7 @@ const Login = () => {
 
               }`}
             onClick={() => setSelectedRole(
-              "Member"
+              "member"
             )}
           >
 
